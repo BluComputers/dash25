@@ -12,151 +12,166 @@
     .button-bar { display: flex; justify-content: center; gap: 20px; padding: 20px; background: #00264d; }
     .button-bar button { font-size: 16px; padding: 12px 20px; background: #007BFF; color: white; border: none; border-radius: 6px; cursor: pointer; }
     .vor-box { background: white; border: 3px solid #ffcc00; padding: 20px; margin: 20px; border-radius: 10px; color: black; font-weight: bold; }
-    .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
-    .card { background: #ffcc00; color: black; font-weight: bold; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
-    .calendar { width: 100%; border-collapse: collapse; background: white; color: black; }
-    .calendar th, .calendar td { border: 1px solid #ccc; padding: 10px; text-align: center; }
-    .message-box textarea, .message-box input, .message-box button { width: 100%; margin-top: 10px; padding: 10px; font-size: 16px; border-radius: 6px; border: none; }
-    .message-box ul { list-style: none; padding: 0; }
-    .message-box li { background: #eee; color: #000; margin: 10px 0; padding: 10px; border-radius: 6px; position: relative; }
-    .message-box li button { position: absolute; right: 10px; top: 10px; background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+    .dashboard { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; padding: 20px; }
+    .messages-box { background: #00264d; padding: 20px; border-radius: 10px; }
+    #messageList { list-style-type: none; padding: 0; }
+    #messageList li { background: #003366; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+    .message-form { display: flex; gap: 10px; margin-top: 10px; }
+    .message-form input { flex-grow: 1; padding: 8px; border-radius: 5px; border: none; }
+    .message-form button { padding: 8px 15px; background: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .calendar-box { background: #00264d; padding: 20px; border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; text-align: center; }
+    th, td { padding: 10px; border: 1px solid #003366; }
+    th { background: #003366; }
+    .login-box { text-align: center; padding: 20px; }
+    .login-box input { padding: 10px; margin: 10px 0; width: 200px; border-radius: 5px; border: none; }
+    .login-box button { padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; }
   </style>
 </head>
 <body>
-<header>
-  West Norfolk Community Transport & Go To Town LTD
-  <div id="datetime">Loading date and time...</div>
-</header>
-
-<div class="button-bar">
-  <button onclick="window.open('https://car-check.co.uk/check/', '_blank')">Load VRM Details</button>
-  <button onclick="window.open('https://tylermngr.github.io/GTT/', '_blank')">Load Job Card</button>
-  <button onclick="alert('Inspection Form placeholder')">Load Inspection Form</button>
-  <button onclick="window.open('mailto:', '_blank')">Load Email</button>
-</div>
-
-<div class="vor-box">
-  <h2>VOR</h2>
-  <p>Vehicle Off Road status and notes go here.</p>
-</div>
-
-<div class="dashboard">
-  <div class="card"><h2>Today's Workshop</h2><p>Workshop on Safety Procedures</p></div>
-  <div class="card"><h2>Tomorrow's Workshop</h2><p>Workshop on Equipment Maintenance</p></div>
-  <div class="card"><h2 style="text-align:center;">Efficiency</h2><p style="font-size:48px; text-align:center;">85%</p></div>
-  <div class="card message-box">
-    <h2>Message Box</h2>
-    <div id="loginArea">
-      <input type="password" id="pinInput" placeholder="Enter PIN">
-      <button onclick="login()">Login</button>
-    </div>
-    <div id="messageArea" style="display:none;">
-      <p>Logged in as: <span id="usernameDisplay"></span></p>
-      <textarea id="messageInput" placeholder="Type your message here..."></textarea>
-      <button onclick="sendMessage()">Send</button>
+  <header>
+    Workshop Dashboard
+    <div id="datetime"></div>
+  </header>
+  <div class="button-bar">
+    <button>Announcements</button>
+    <button>Messages</button>
+    <button>Calendar</button>
+  </div>
+  <div class="vor-box">
+    Workshop: Vehicle On Ramp
+  </div>
+  <div class="dashboard">
+    <div class="messages-box">
+      <h2>Messages</h2>
       <ul id="messageList"></ul>
+      <div class="message-form">
+        <input type="text" id="messageInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+    <div class="calendar-box">
+      <h2>Calendar</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+          </tr>
+        </thead>
+        <tbody id="calendarBody"></tbody>
+      </table>
     </div>
   </div>
-  <div class="card" style="grid-column: span 2;">
-    <h2>Calendar</h2>
-    <table class="calendar">
-      <thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr></thead>
-      <tbody id="calendarBody"></tbody>
-    </table>
+  <div class="login-box">
+    <h2>Login</h2>
+    <input type="password" id="pinInput" placeholder="Enter PIN">
+    <button onclick="checkPin()">Login</button>
   </div>
-</div>
+  <script>
+    // Firebase configuration (replace with your own)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "https://your-database-name.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCWudn-cmRbunM4RmWNqEjWkDqHCgiRcPc",
-    authDomain: "wnctgtt.firebaseapp.com",
-    databaseURL: "https://wnctgtt-default-rtdb.firebaseio.com",
-    projectId: "wnctgtt",
-    storageBucket: "wnctgtt.appspot.com",
-    messagingSenderId: "82469748588",
-    appId: "1:82469748588:web:7c7e3a2d5d4333b1bc3d49",
-    measurementId: "G-Z8E0ZNWY6F"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  const users = {
-    "1984": "Tyler",
-    "0125": "Kris",
-    "0101": "Ness",
-    "7777": "Tash",
-    "8888": "Kirsty",
-    "0911": "Supervisor",
-    "0207": "Admin"
-  };
-
-  let currentUser = null;
-
-  function login() {
-    const pin = document.getElementById("pinInput").value;
-    if (users[pin]) {
-      currentUser = users[pin];
-      localStorage.setItem("user", currentUser);
-      document.getElementById("usernameDisplay").textContent = currentUser;
-      document.getElementById("loginArea").style.display = "none";
-      document.getElementById("messageArea").style.display = "block";
-      listenForMessages();
-    } else {
-      alert("Invalid PIN");
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
     }
-  }
 
-  function sendMessage() {
-    const text = document.getElementById("messageInput").value;
-    if (text.trim()) {
-      const msg = {
-        user: currentUser,
-        text,
-        time: new Date().toLocaleString()
-      };
-      db.ref("messages").push(msg);
-      document.getElementById("messageInput").value = "";
-    }
-  }
+    const db = firebase.database();
+    let currentUser = null;
 
-  function listenForMessages() {
-    const list = document.getElementById("messageList");
-    db.ref("messages").on("value", snapshot => {
-      list.innerHTML = "";
-      const data = snapshot.val();
-      for (let id in data) {
-        const msg = data[id];
-        const li = document.createElement("li");
-        li.textContent = `[${msg.time}] ${msg.user}: ${msg.text}`;
-        if (currentUser === "Admin") {
-          const btn = document.createElement("button");
-          btn.textContent = "Delete";
-          btn.onclick = () => db.ref("messages/" + id).remove();
-          li.appendChild(btn);
-        }
-        list.appendChild(li);
+    // Functions
+    function sendMessage() {
+      const messageInput = document.getElementById("messageInput");
+      const text = messageInput.value.trim();
+      if (text && currentUser) {
+        db.ref("messages").push({
+          user: currentUser,
+          text: text,
+          time: new Date().toISOString()
+        });
+        messageInput.value = "";
       }
-    });
-  }
-
-  function updateDateTime() {
-    const now = new Date();
-    document.getElementById("datetime").textContent = now.toLocaleString();
-  }
-  setInterval(updateDateTime, 1000);
-
-  function generateCalendar() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const body = document.getElementById("calendarBody");
-    body.innerHTML = "";
-    let row = document.createElement("tr");
-    for (let i = 0; i < firstDay; i++) {
-      row.appendChild(document.createElement("td"));
     }
-    for (let day = 1; day <= daysInMonth; day++) {
-      const cell = document.createElement("td");
-      cell.textContent
+
+    function checkPin() {
+      // Prevent the form from submitting and refreshing the page
+      event.preventDefault();
+
+      // Get the value from the pin input field
+      const pinInput = document.getElementById("pinInput");
+      const pin = pinInput.value;
+
+      // Check the pin
+      if (pin === "2369") { // You can replace "2369" with your actual PIN
+          alert("Login Successful!");
+      } else {
+          alert("Invalid PIN. Please try again.");
+      }
+    }
+
+    function listenForMessages() {
+      const list = document.getElementById("messageList");
+      db.ref("messages").on("value", snapshot => {
+        list.innerHTML = "";
+        const data = snapshot.val();
+        for (let id in data) {
+          const msg = data[id];
+          const li = document.createElement("li");
+          li.textContent = `[${msg.time}] ${msg.user}: ${msg.text}`;
+          if (currentUser === "Admin") {
+            const btn = document.createElement("button");
+            btn.textContent = "Delete";
+            btn.onclick = () => db.ref("messages/" + id).remove();
+            li.appendChild(btn);
+          }
+          list.appendChild(li);
+        }
+      });
+    }
+
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById("datetime").textContent = now.toLocaleString();
+    }
+    setInterval(updateDateTime, 1000);
+
+    function generateCalendar() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const body = document.getElementById("calendarBody");
+      body.innerHTML = "";
+      let row = document.createElement("tr");
+      for (let i = 0; i < firstDay; i++) {
+        row.appendChild(document.createElement("td"));
+      }
+      for (let day = 1; day <= daysInMonth; day++) {
+        const td = document.createElement("td");
+        td.textContent = day;
+        row.appendChild(td);
+        if (row.children.length === 7) {
+          body.appendChild(row);
+          row = document.createElement("tr");
+        }
+      }
+      if (row.children.length > 0) {
+        body.appendChild(row);
+      }
+    }
+
+    // Call initial functions
+    updateDateTime();
+    generateCalendar();
+  </script>
+</body>
+</html>
