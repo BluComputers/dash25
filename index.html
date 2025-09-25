@@ -183,14 +183,18 @@
 
 <script>
   const firebaseConfig = {
-    apiKey: "AIzaSyCWudn-cmRbunM4RmWNqEjWkDqHCgiRcPc",
-    authDomain: "wnctgtt.firebaseapp.com",
-    databaseURL: "https://wnctgtt-default-rtdb.firebaseio.com",
-    projectId: "wnctgtt",
-    storageBucket: "wnctgtt.appspot.com",
-    messagingSenderId: "82469748588",
-    appId: "1:82469748588:web:7c7e3a2d5d4333b1bc3d49",
-    measurementId: "G-Z8E0ZNWY6F"
+  apiKey: "AIzaSyCWudn-cmRbunM4RmWNqEjWkDqHCgiRcPc",
+  authDomain: "wnctgtt.firebaseapp.com",
+  databaseURL: "https://wnctgtt-default-rtdb.firebaseio.com",
+  projectId: "wnctgtt",
+  storageBucket: "wnctgtt.appspot.com",
+  messagingSenderId: "82469748588",
+  appId: "1:82469748588:web:7c7e3a2d5d4333b1bc3d49",
+  measurementId: "G-Z8E0ZNWY6F"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
@@ -207,17 +211,21 @@
 
   let currentUser = null;
 
-  function login() {
-    const pin = document.getElementById("pinInput").value;
-    if (users[pin]) {
-      currentUser = users[pin];
-      localStorage.setItem("user", currentUser);
-      document.getElementById("usernameDisplay").textContent = currentUser;
-      document.getElementById("loginArea").style.display = "none";
-      document.getElementById("messageArea").style.display = "block";
-      listenForMessages();
-    } else {
-      alert("Invalid PIN");
+function login() {
+  const pin = document.getElementById("pinInput").value;
+  if (users[pin]) {
+    currentUser = users[pin];
+    localStorage.setItem("user", currentUser);
+    document.getElementById("usernameDisplay").textContent = currentUser;
+    document.getElementById("loginArea").style.display = "none";
+    document.getElementById("messageArea").style.display = "block";
+    listenForMessages();
+  } else {
+    alert("Invalid PIN");
+    <button onclick="login()">Login</button>
+  }
+}
+
     }
   }
 
@@ -250,3 +258,4 @@
           li.appendChild(btn);
         }
        
+
