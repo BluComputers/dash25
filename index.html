@@ -183,18 +183,14 @@
 
 <script>
   const firebaseConfig = {
-  apiKey: "AIzaSyCWudn-cmRbunM4RmWNqEjWkDqHCgiRcPc",
-  authDomain: "wnctgtt.firebaseapp.com",
-  databaseURL: "https://wnctgtt-default-rtdb.firebaseio.com",
-  projectId: "wnctgtt",
-  storageBucket: "wnctgtt.appspot.com",
-  messagingSenderId: "82469748588",
-  appId: "1:82469748588:web:7c7e3a2d5d4333b1bc3d49",
-  measurementId: "G-Z8E0ZNWY6F"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
+    apiKey: "AIzaSyCWudn-cmRbunM4RmWNqEjWkDqHCgiRcPc",
+    authDomain: "wnctgtt.firebaseapp.com",
+    databaseURL: "https://wnctgtt-default-rtdb.firebaseio.com",
+    projectId: "wnctgtt",
+    storageBucket: "wnctgtt.appspot.com",
+    messagingSenderId: "82469748588",
+    appId: "1:82469748588:web:7c7e3a2d5d4333b1bc3d49",
+    measurementId: "G-Z8E0ZNWY6F"
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
@@ -211,21 +207,17 @@ const db = firebase.database();
 
   let currentUser = null;
 
-function login() {
-  const pin = document.getElementById("pinInput").value;
-  if (users[pin]) {
-    currentUser = users[pin];
-    localStorage.setItem("user", currentUser);
-    document.getElementById("usernameDisplay").textContent = currentUser;
-    document.getElementById("loginArea").style.display = "none";
-    document.getElementById("messageArea").style.display = "block";
-    listenForMessages();
-  } else {
-    alert("Invalid PIN");
-    <button onclick="login()">Login</button>
-  }
-}
-
+  function login() {
+    const pin = document.getElementById("pinInput").value;
+    if (users[pin]) {
+      currentUser = users[pin];
+      localStorage.setItem("user", currentUser);
+      document.getElementById("usernameDisplay").textContent = currentUser;
+      document.getElementById("loginArea").style.display = "none";
+      document.getElementById("messageArea").style.display = "block";
+      listenForMessages();
+    } else {
+      alert("Invalid PIN");
     }
   }
 
@@ -257,5 +249,50 @@ function login() {
           btn.onclick = () => db.ref("messages/" + id).remove();
           li.appendChild(btn);
         }
-       
+        list.appendChild(li);
+      }
+    });
+  }
 
+  function updateDateTime() {
+    const now = new Date();
+    document.getElementById("datetime").textContent = now.toLocaleString();
+  }
+
+  function renderCalendar() {
+    const tbody = document.getElementById("calendarBody");
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    tbody.innerHTML = "";
+    let row = document.createElement("tr");
+    for (let i = 0; i < firstDay; i++) {
+      row.appendChild(document.createElement("td"));
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const cell = document.createElement("td");
+      cell.textContent = day;
+      row.appendChild(cell);
+      if ((firstDay + day) % 7 === 0 || day === daysInMonth) {
+        tbody.appendChild(row);
+        row = document.createElement("tr");
+      }
+  window.onload = () => {
+    updateDateTime();
+    renderCalendar();
+    setInterval(updateDateTime, 60000);
+
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      currentUser = storedUser;
+      document.getElementById("usernameDisplay").textContent = currentUser;
+      document.getElementById("loginArea").style.display = "none";
+      document.getElementById("messageArea").style.display = "block";
+      listenForMessages();
+    }
+  };
+</script>
