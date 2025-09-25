@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Workshop Dashboard</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #001f4d;
+      color: white;
+    }
+    header {
+      background-color: #003366;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    #datetime {
+      font-size: 16px;
+      margin-top: 5px;
+    }
+    .button-bar {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+      background-color: #00264d;
+    }
+    .button-bar a {
+      text-decoration: none;
+    }
+    .button-bar button {
+      font-size: 16px;
+      padding: 12px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .vor-box {
+      background-color: white;
+      border: 3px solid #ffcc00;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 10px;
+      color: black;
+      font-weight: bold;
+    }
+    .vor-box h2 {
+      color: red;
+      font-weight: bold;
+      margin-top: 0;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 20px;
+    }
+    .card {
+      background-color: #ffcc00;
+      color: black;
+      font-weight: bold;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .calendar {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      color: black;
+    }
+    .calendar th, .calendar td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    .message-box {
+      width: 100%;
+      background-color: #fff;
+      color: #000;
+      font-weight: normal;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .message-box input,
+    .message-box textarea,
+    .message-box button {
+      font-size: 16px;
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+    .message-box ul {
+      list-style: none;
+      padding: 0;
+    }
+    .message-box li {
+      background: #eee;
+      color: #000;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+      position: relative;
+    }
+    .message-box li button {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  West Norfolk Community Transport & Go To Town LTD
+  <div id="datetime">Loading date and time...</div>
+</header>
+
+<div class="button-bar">
+  <a href="https://car-check.co.uk/check/" target="_blank"><button>Load VRM Details</button></a>
+  <a href="https://tylermngr.github.io/GTT/" target="_blank"><button>Load Job Card</button></a>
+  <a href="#" onclick="alert('Inspection Form placeholder');"><button>Load Inspection Form</button></a>
+  <a href="mailto:" target="_blank"><button>Load Email</button></a>
+</div>
+
+<div class="vor-box">
+  <h2>VOR</h2>
+  <p>Vehicle Off Road status and notes go here.</p>
+</div>
+
+<div class="dashboard">
+  <div class="card">
+    <h2>Today's Workshop</h2>
+    <p id="workshopToday">Workshop on Safety Procedures</p>
+  </div>
+  <div class="card">
+    <h2>Tomorrow's Workshop</h2>
+    <p id="workshopTomorrow">Workshop on Equipment Maintenance</p>
+  </div>
+  <div class="card">
+    <h2 style="text-align: center;">Efficiency</h2>
+    <p id="efficiency" style="font-size: 48px; text-align: center; margin: 20px 0;">85%</p>
+  </div>
+  <div class="card message-box">
+    <h2>Message Box</h2>
+    <div id="loginArea">
+      <input type="password" id="pinInput" placeholder="Enter PIN">
+      <button onclick="login()">Login</button>
+    </div>
+    <div id="messageArea" style="display:none;">
+      <p>Logged in as: <span id="usernameDisplay"></span></p>
+      <textarea id="messageInput" placeholder="Type your message here..."></textarea>
+      <button onclick="sendMessage()">Send</button>
+      <ul id="messageList"></ul>
+    </div>
+  </div>
+  <div class="card" style="grid-column: span 2;">
+    <h2>Calendar</h2>
+    <table class="calendar">
+      <thead>
+        <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
+      </thead>
+      <tbody id="calendarBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCWudn-cmRbunM4RmWNqEjWkDqHCgiRcPc",
+    authDomain: "wnctgtt.firebaseapp.com",
+    databaseURL: "https://wnctgtt-default-rtdb.firebaseio.com",
+    projectId: "wnctgtt",
+    storageBucket: "wnctgtt.appspot.com",
+    messagingSenderId: "82469748588",
+    appId: "1:82469748588:web:7c7e3a2d5d4333b1bc3d49",
+    measurementId: "G-Z8E0ZNWY6F"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const users = {
+    "1984": "Tyler",
+    "0125": "Kris",
+    "0101": "Ness",
+    "7777": "Tash",
+    "8888": "Kirsty",
+    "0911": "Supervisor",
+    "0207": "Admin"
+  };
+
+  let currentUser = null;
+
+  function login() {
+    const pin = document.getElementById("pinInput").value;
+    if (users[pin]) {
+      currentUser = users[pin];
+      localStorage.setItem("user", currentUser);
+      document.getElementById("usernameDisplay").textContent = currentUser;
+      document.getElementById("loginArea").style.display = "none";
+      document.getElementById("messageArea").style.display = "block";
+      listenForMessages();
+    } else {
+      alert("Invalid PIN");
+    }
+  }
+
+  function sendMessage() {
+    const text = document.getElementById("messageInput").value;
+    if (text.trim()) {
+      const msg = {
+        user: currentUser,
+        text,
+        time: new Date().toLocaleString()
+      };
+      db.ref("messages").push(msg);
+      document.getElementById("messageInput").value = "";
+    }
+  }
+
+  function listenForMessages() {
+    const list = document.getElementById("messageList");
+    db.ref("messages").on("value", snapshot => {
+      list.innerHTML = "";
+      const data = snapshot.val();
+      for (let id in data) {
+        const msg = data[id];
+        const li = document.createElement("li");
+        li.textContent = `[${msg.time}] ${msg.user}: ${msg.text}`;
+        if (currentUser === "Admin") {
+          const btn
