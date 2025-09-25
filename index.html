@@ -241,9 +241,4 @@
       const data = snapshot.val();
       for (let id in data) {
         const msg = data[id];
-        const li = document.createElement("li");
-        li.textContent = `[${msg.time}] ${msg.user}: ${msg.text}`;
-        if (currentUser === "Admin") {
-          const btn = document.createElement("button");
-          btn.textContent = "Delete";
-         
+        const li = document.createElement
