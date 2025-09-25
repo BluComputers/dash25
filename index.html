@@ -154,7 +154,35 @@
     <p id="workshopTomorrow">Workshop on Equipment Maintenance</p>
   </div>
   <div class="card">
-      const firebaseConfig = {
+    <h2 style="text-align: center;">Efficiency</h2>
+    <p id="efficiency" style="font-size: 48px; text-align: center; margin: 20px 0;">85%</p>
+  </div>
+  <div class="card message-box">
+    <h2>Message Box</h2>
+    <div id="loginArea">
+      <input type="password" id="pinInput" placeholder="Enter PIN">
+      <button onclick="login()">Login</button>
+    </div>
+    <div id="messageArea" style="display:none;">
+      <p>Logged in as: <span id="usernameDisplay"></span></p>
+      <textarea id="messageInput" placeholder="Type your message here..."></textarea>
+      <button onclick="sendMessage()">Send</button>
+      <ul id="messageList"></ul>
+    </div>
+  </div>
+  <div class="card" style="grid-column: span 2;">
+    <h2>Calendar</h2>
+    <table class="calendar">
+      <thead>
+        <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
+      </thead>
+      <tbody id="calendarBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const firebaseConfig = {
     apiKey: "AIzaSyCWudn-cmRbunM4RmWNqEjWkDqHCgiRcPc",
     authDomain: "wnctgtt.firebaseapp.com",
     databaseURL: "https://wnctgtt-default-rtdb.firebaseio.com",
@@ -227,49 +255,4 @@
   }
 
   function updateDateTime() {
-    const now = new Date();
-    document.getElementById("datetime").textContent = now.toLocaleString();
-  }
-
-  function renderCalendar() {
-    const tbody = document.getElementById("calendarBody");
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    tbody.innerHTML = "";
-    let row = document.createElement("tr");
-    for (let i = 0; i < firstDay; i++) {
-      row.appendChild(document.createElement("td"));
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const cell = document.createElement("td");
-      cell.textContent = day;
-      row.appendChild(cell);
-      if ((firstDay + day) % 7 === 0 || day === daysInMonth) {
-        tbody.appendChild(row);
-        row = document.createElement("tr");
-      }
-    }
-  }
-
-  window.onload = () => {
-    updateDateTime();
-    renderCalendar();
-    setInterval(updateDateTime, 60000);
-
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      currentUser = storedUser;
-      document.getElementById("usernameDisplay").textContent = currentUser;
-      document.getElementById("loginArea").style.display = "none";
-      document.getElementById("messageArea").style.display = "block";
-      listenForMessages();
-    }
-  };
-</script>
-</body>
-</html>
+    const now
